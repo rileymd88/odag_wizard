@@ -1,9 +1,13 @@
 var rootPath = window.location.hostname;
 var portUrl = "80";
-var odagBindingScripts = [];
+
 var odagQuoteWrapping;
 var rows = [];
-var extendWhereList;
+var odagBindingScripts = [];
+var extendWhereList = "";
+var extendWhereScript;
+var extendWhereDatesList = "";
+var extendWhereDatesScript;
 
 if (window.location.port == "") {
     if ("https:" == window.location.protocol)
@@ -120,9 +124,9 @@ require([
             console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
         });
 
-        // Create an array when submit button is clicked and create ODAG bindings
+        // Create an array when submit button is clicked and create ODAG bindings and Extend Where loops
         $("#ApplySelectedTable").click(function () {
-            var promise = new Promise(function (resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 $('table tr').each(function (i, n) {
                     var $row = $(n);
                     if (i != 0) {
@@ -132,8 +136,8 @@ require([
                             Type: $row.find('button:eq(2)').text().slice(" ", -1)
                         });
                     }
-                    resolve(rows);
                 })
+                resolve(rows);
             }).then((function () {
                 console.log(JSON.stringify(rows));
                 // Get default ODAG Binding script
@@ -141,7 +145,8 @@ require([
                     url: "./config/OdagBinding.txt",
                     success: function (data) {
                     }
-                }).then(function (odagBindingScript) {
+                }).then(function (data) {
+                    odagBindingScript = data;
                     // loop through rows selected and create ODAG Bindings
                     for (var i = 0; i < rows.length; i++) {
                         tmpScriptOne = odagBindingScript.replace("OdagField", rows[i].Field);
@@ -150,37 +155,61 @@ require([
                         odagBindingScripts.push(finalScript);
                     }
                     console.log(odagBindingScripts);
-                })
-                    .then(function () {
-                        // Get default extend ExtendWhere script
-                        $.ajax({
-                            url: "./config/ExtendWhere.txt",
-                            success: function (data) {
-                            }
-                        }).then(function (extendWhereScript) {
-                            var extendWhereList = "";
-                            // loop through rows selected and create ExtendWhere script
+                }).then(function () {
+                    // Get default ExtendWhere script
+                    $.ajax({
+                        url: "./config/ExtendWhere.txt",
+                        success: function (data) {
+                        }
+                    }).then(function (data) {
+                        extendWhereScript = data;
+                        // loop through rows selected and create ExtendWhere script
+                        return new Promise(function (resolve, reject) {
                             for (var i = 0; i < rows.length; i++) {
                                 if (rows[i].Type === "String") {
                                     extendWhereList += "'" + rows[i].Field + "',";
                                 }
-                                else {
-                                    console.log("not a string");
-                                }
                             }
-                            new Promise(function(resolve, reject){
-                                extendWhereList.slice(",", -1);
-                                resolve(extendWhereList);
-                            }).then(function (extendWhereList) {
-                                console.log('extendWhereList', extendWhereList);
-                                new Promise(function(resolve, reject){
-                                    extendWhereScript.replace("ExtendWhereList", extendWhereList);
-                                }).then(function(extendWhereScript){
-                                    console.log(extendWhereScript);
-                                });
+                            resolve(extendWhereList.slice(",", -1));
+                        }).then(function (data) {
+                            extendWhereList = data;
+                            console.log('extendWhereList', extendWhereList);
+                            return new Promise(function (resolve, reject) {
+                                resolve(extendWhereScript.replace("ExtendWhereList", extendWhereList));
+                            }).then(function (data) {
+                                extendWhereScript = data;
+                                console.log(extendWhereScript);
+                                // GET default ExtendWhereDates script
+                                $.ajax({
+                                    url: "./config/ExtendWhereDates.txt",
+                                    success: function (data) {
+                                    }
+                                }).then(function (data) {
+                                    console.log("dates", data);
+                                    extendWhereDatesScript = data;
+                                    // loop through rows selected and create ExtendWhereDates script
+                                    return new Promise(function (resolve, reject) {
+                                        for (var i = 0; i < rows.length; i++) {
+                                            if (rows[i].Type === "Date") {
+                                                extendWhereDatesList += "'" + rows[i].Field + "',";
+                                            }
+                                        }
+                                        resolve(extendWhereDatesList.slice(",", -1));
+                                    }).then(function (data) {
+                                        extendWhereDatesList = data;
+                                        console.log('extendWhereDatesList', extendWhereDatesList);
+                                        return new Promise(function (resolve, reject) {
+                                            resolve(extendWhereDatesScript.replace("ExtendWhereDatesList", extendWhereDatesList));
+                                        }).then(function (data) {
+                                            extendWhereDatesScript = data;
+                                            console.log('extendWhereDatesScript', extendWhereDatesScript);
+                                        })
+                                    })
+                                })
                             });
-                        })
-                    });
+                        });
+                    })
+                });
             }));
         });
     });
