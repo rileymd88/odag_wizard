@@ -1,5 +1,9 @@
 var rootPath = window.location.hostname;
 var portUrl = "80";
+var odagBindingScripts = [];
+var odagQuoteWrapping;
+var rows = [];
+var extendWhereList;
 
 if (window.location.port == "") {
     if ("https:" == window.location.protocol)
@@ -21,6 +25,10 @@ var config = {
     port: window.location.port,
     isSecure: window.location.protocol === "https:"
 };
+
+
+
+
 console.log('running');
 require.config({
     baseUrl: (config.isSecure ? "https://" : "http://") + config.host + (config.port ? ":" + config.port : "") + config.prefix + "resources",
@@ -72,7 +80,7 @@ require([
         });
 
         //Create a new Row and run selectpicker
-        function createRow(Rownum) {       
+        function createRow(Rownum) {
             app.getList("FieldList", function (reply) {
                 $.each(reply.qFieldList.qItems, function (index, value) {
                     $("#selectField_" + Rownum).append("<option value='" + value.qName + "'>" + value.qName + "</option>");
@@ -88,34 +96,93 @@ require([
                 $('#Type_' + Rownum).selectpicker({
                     style: 'btn-default',
                     size: 10
-                }); 
-                vRowNum++; 
-                console.log('Number of Rows:',$('#Fieldselection tr').length-1);        
+                });
+                vRowNum++;
+                console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
             });
         };
 
-    //Add another Row
-    $("body").delegate('.add_left', 'click', function () {
-        var newrowcontent = '';
-        newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
-        newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option>odo</option><option>odso</option><option>ods</option><option>odo</option><option>od</option></select></td>';
-        newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option>String</option><option>Date</option></select></td>';
-        newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class="glyphicon glyphicon-plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="glyphicon glyphicon-minus"></span></a></div></td></tr>';
-        $(newrowcontent).insertAfter('#' + $(this).closest("tr").attr('id'));
-        createRow(vRowNum);
+        //Add another Row
+        $("body").delegate('.add_left', 'click', function () {
+            var newrowcontent = '';
+            newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
+            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option>odo</option><option>odso</option><option>ods</option><option>odo</option><option>od</option></select></td>';
+            newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option>String</option><option>Date</option></select></td>';
+            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class="glyphicon glyphicon-plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="glyphicon glyphicon-minus"></span></a></div></td></tr>';
+            $(newrowcontent).insertAfter('#' + $(this).closest("tr").attr('id'));
+            createRow(vRowNum);
+        });
+
+        //Remove a Row
+        $("body").delegate('.add_right', 'click', function () {
+            $('#' + $(this).closest("tr").attr('id')).remove();
+            //Count # rows
+            console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
+        });
+
+        // Create an array when submit button is clicked and create ODAG bindings
+        $("#ApplySelectedTable").click(function () {
+            var promise = new Promise(function (resolve, reject) {
+                $('table tr').each(function (i, n) {
+                    var $row = $(n);
+                    if (i != 0) {
+                        rows.push({
+                            Field: $row.find('button:eq(0)').text().slice(" ", -1),
+                            Option: $row.find('button:eq(1)').text().slice(" ", -1),
+                            Type: $row.find('button:eq(2)').text().slice(" ", -1)
+                        });
+                    }
+                    resolve(rows);
+                })
+            }).then((function () {
+                console.log(JSON.stringify(rows));
+                // Get default ODAG Binding script
+                $.ajax({
+                    url: "./config/OdagBinding.txt",
+                    success: function (data) {
+                    }
+                }).then(function (odagBindingScript) {
+                    // loop through rows selected and create ODAG Bindings
+                    for (var i = 0; i < rows.length; i++) {
+                        tmpScriptOne = odagBindingScript.replace("OdagField", rows[i].Field);
+                        tmpScriptTwo = tmpScriptOne.replace("OptionField", rows[i].Option);
+                        finalScript = tmpScriptTwo.replace("OdagQuoteWrapping", 0);
+                        odagBindingScripts.push(finalScript);
+                    }
+                    console.log(odagBindingScripts);
+                })
+                    .then(function () {
+                        // Get default extend ExtendWhere script
+                        $.ajax({
+                            url: "./config/ExtendWhere.txt",
+                            success: function (data) {
+                            }
+                        }).then(function (extendWhereScript) {
+                            var extendWhereList = "";
+                            // loop through rows selected and create ExtendWhere script
+                            for (var i = 0; i < rows.length; i++) {
+                                if (rows[i].Type === "String") {
+                                    extendWhereList += "'" + rows[i].Field + "',";
+                                }
+                                else {
+                                    console.log("not a string");
+                                }
+                            }
+                            new Promise(function(resolve, reject){
+                                extendWhereList.slice(",", -1);
+                                resolve(extendWhereList);
+                            }).then(function (extendWhereList) {
+                                console.log('extendWhereList', extendWhereList);
+                                new Promise(function(resolve, reject){
+                                    extendWhereScript.replace("ExtendWhereList", extendWhereList);
+                                }).then(function(extendWhereScript){
+                                    console.log(extendWhereScript);
+                                });
+                            });
+                        })
+                    });
+            }));
+        });
     });
 
-    //Remove a Row
-    $("body").delegate('.add_right', 'click', function () {
-        $('#' + $(this).closest("tr").attr('id')).remove();
-        //Count # rows
-        console.log('Number of Rows:',$('#Fieldselection tr').length-1);
-    });
-
-
-
-
-
-
-});
 
