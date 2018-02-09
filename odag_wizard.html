@@ -1,5 +1,6 @@
 ﻿<!doctype html>
 <html lang="en">
+
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -114,41 +115,69 @@
 
                             </div>
                             <div class="row" style="margin:30px 30px 30px 30px;">
-                                <button id="AddFilter" type="button" class="btn btn-default" style="float:left; width:100px">
-                                    <span style="margin-right:10px;" class="glyphicon glyphicon-filter"></span>Function</button>
-                                <button id="Limit" type="button" class="btn btn-default" style="float:left; width:100px; margin-left:12px;">
-                                    <span style="margin-right:10px;" class="glyphicon glyphicon-dashboard"></span>Function</button>
+                                <div id="accordion" role="tablist" aria-multiselectable="true">
+                                    <div class="card">
+                                        <div class="card-header" role="tab" id="headingTwo">
+                                            <h5 class="mb-0">
+                                                <button type="button" class="btn btn-default" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false"
+                                                    aria-controls="collapseTwo" style="float:left;">
+                                                    <span id="scriptButton" style="margin-right:10px;" class="glyphicon glyphicon-plus"></span>Preview Auto-Generated Load Script
+                                                </button>
+                                            </h5>
+                                        </div>
+                                        <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                        </div>
+                                    </div>
+                                </div>
                                 <button id="ApplySelectedTable" type="button" class="btn btn-default" style="float:right;">
-                                    <span style="margin-right:10px;" class="glyphicon glyphicon-ok"></span>Function</button>
+                                    <span style="margin-right:10px;" class="glyphicon glyphicon-ok"></span>Create App</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Next steps dialoque -->
+                <div id="startModal" class="modal fade">
+                    <div id="welcome" class="modal-dialog modal-lg">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Qlik ODAG Wizard</h4>
+                                </div>
+                                <div class="modal-body">
+
+                                    <div class="card">
+                                        <h4 class="card-header">Open newly created ODAG app</h4>
+                                        <div class="card-body">
+                                            <p class="card-text">This app will contain auto-generated ODAG script which was generated based on
+                                                your selections in the wizard. The "Open App" button in the right corner
+                                                below will bring you into the new app's script editor.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <br>
+
+                                    <div class="card">
+                                        <h4 class="card-header">Add Data Load Script</h4>
+                                        <div class="card-body">
+                                            <p class="card-text">Add the detailed data load script you would like to have for your analysis app
+                                                in the newly created ODAG app</p>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="card" ">
+                                        <h4 class="card-header ">Add Where Clause</h4>
+                                        <div class="card-body ">
+                                            <p class="card-text ">Add the variables $(WHERE_PART) and $(WHERE_DTPART) into your script</p>
+                                        </div>
+                                    </div>
+                                <div class="modal-footer ">
+                                    <a href=" " id="openAppButton " class="btn btn-info " role="button ">Open App</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- After app is created dialoque -->
-    <div id="startModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-        <div id="welcome" class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Qlik ODAG Wizard</h4>
-                    </div>
-                    <div class="modal-body" style="padding: 0px;">
-                        <img src="img/Welcome.png" class="img-responsive">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Open App</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
 </body>
-
 </html>

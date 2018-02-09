@@ -1,16 +1,6 @@
 var rootPath = window.location.hostname;
 var portUrl = "80";
 
-var odagQuoteWrapping;
-var rows = [];
-var odagBindingScripts = [];
-var extendWhereList = "";
-var extendWhereScript;
-var extendWhereDatesList = "";
-var extendWhereDatesScript;
-var defaultSubs;
-var traceScript;
-
 if (window.location.port == "") {
     if ("https:" == window.location.protocol)
         portUrl = "443";
@@ -31,9 +21,6 @@ var config = {
     port: window.location.port,
     isSecure: window.location.protocol === "https:"
 };
-
-
-
 
 console.log('running');
 require.config({
@@ -57,12 +44,12 @@ require([
 
         // Make connection to Enigma and watch for scope changes
         var scope = $('body').scope();
-        scope.enigma = null;
+        scopeEnigma = null;
         console.log("global.session", global.session);
         scope.$watch(function () { return global.session.__enigmaApp }, function (newValue, oldValue) {
             if (newValue) {
-                scope.enigma = newValue;
-                console.log("bound Enigma", scope.enigma);
+                scopeEnigma = newValue;
+                console.log("bound Enigma", scopeEnigma);
             }
         });
 
@@ -77,7 +64,6 @@ require([
                 size: 10
             });
         });
-
         //Select Event for selectApp
         $('#selectApp').on('changed.bs.select', function () {
             vselapp = $(this).val();
@@ -137,167 +123,206 @@ require([
             //Count # rows
             console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
         });
-
-        // Create an array when submit button is clicked and create ODAG bindings and Extend Where loops
+        // Create script and app when Create App button is clicked
         $("#ApplySelectedTable").click(function () {
-            return new Promise(function (resolve, reject) {
-                $('table tr').each(function (i, n) {
-                    var $row = $(n);
-                    if (i != 0) {
-                        rows.push({
-                            Field: $row.find('button:eq(0)').text().slice(" ", -1),
-                            Option: $row.find('button:eq(1)').text().slice(" ", -1),
-                            Type: $row.find('button:eq(2)').text().slice(" ", -1)
-                        });
-                    }
+            createScript().then(function (script) {
+                createApp(script).then(function (app) {
+                    console.log(app);
+                    newAppId = app.qAppId;
                 })
-                resolve(rows);
-            }).then((function () {
-                console.log(JSON.stringify(rows));
-                // Get default ODAG Binding script
+            })
+        });
+        // Populate script on header click
+        $('#collapseTwo').on('show.bs.collapse', function () {
+            createScript().then(function (script) {
+                $("#scriptButton").removeClass("glyphicon glyphicon-plus").addClass("glyphicon glyphicon-minus");
+                $("#collapseTwo").empty();
+                $("#collapseTwo").append('<br><br><p>">' + script + 'style=""</p>');
+            })
+        })
+        // Populate script on header click
+        $('#collapseTwo').on('hidden.bs.collapse', function () {
+            createScript().then(function (script) {
+                $("#scriptButton").removeClass("glyphicon glyphicon-minus").addClass("glyphicon glyphicon-plus");
+                $("#collapseTwo").empty();
+            })
+        })
+    });
+
+
+function createScript() {
+    var odagQuoteWrapping = 0;
+    var rows = [];
+    var odagBindingScripts = [];
+    var extendWhereList = "";
+    var extendWhereScript = "";
+    var extendWhereDatesList = "";
+    var extendWhereDatesScript = "";
+    var defaultSubs = "";
+    var traceScript = "";
+    var script = "";
+    return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
+            rows = [];
+            $('table tr').each(function (i, n) {
+                var $row = $(n);
+                if (i != 0) {
+                    rows.push({
+                        Field: $row.find('button:eq(0)').text().slice(" ", -1),
+                        Option: $row.find('button:eq(1)').text().slice(" ", -1),
+                        Type: $row.find('button:eq(2)').text().slice(" ", -1)
+                    });
+                }
+            })
+            resolve(rows);
+        }).then((function () {
+            console.log(JSON.stringify(rows));
+            // Get default ODAG Binding script
+            $.ajax({
+                url: "./config/OdagBinding.txt",
+                success: function (data) {
+                }
+            }).then(function (data) {
+                odagBindingScript = data;
+                // loop through rows selected and create ODAG Bindings
+                for (var i = 0; i < rows.length; i++) {
+                    tmpScriptOne = odagBindingScript.replace(/OdagField/g, rows[i].Field);
+                    tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
+                    finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
+                    odagBindingScripts.push(finalScript);
+                }
+                console.log(odagBindingScripts);
+            }).then(function () {
+                // Get default ExtendWhere script
                 $.ajax({
-                    url: "./config/OdagBinding.txt",
+                    url: "./config/ExtendWhere.txt",
                     success: function (data) {
                     }
                 }).then(function (data) {
-                    odagBindingScript = data;
-                    // loop through rows selected and create ODAG Bindings
-                    for (var i = 0; i < rows.length; i++) {
-                        tmpScriptOne = odagBindingScript.replace(/OdagField/g, rows[i].Field);
-                        tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
-                        finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
-                        odagBindingScripts.push(finalScript);
-                    }
-                    console.log(odagBindingScripts);
-                }).then(function () {
-                    // Get default ExtendWhere script
-                    $.ajax({
-                        url: "./config/ExtendWhere.txt",
-                        success: function (data) {
-                        }
-                    }).then(function (data) {
-                        extendWhereScript = data;
-                        // loop through rows selected and create ExtendWhere script
-                        return new Promise(function (resolve, reject) {
-                            for (var i = 0; i < rows.length; i++) {
-                                if (rows[i].Type === "String") {
-                                    extendWhereList += "'" + rows[i].Field + "',";
-                                }
+                    extendWhereScript = data;
+                    // loop through rows selected and create ExtendWhere script
+                    return new Promise(function (resolve, reject) {
+                        for (var i = 0; i < rows.length; i++) {
+                            if (rows[i].Type === "String") {
+                                extendWhereList += "'" + rows[i].Field + "',";
                             }
-                            resolve(extendWhereList.slice(",", -1));
+                        }
+                        resolve(extendWhereList.slice(",", -1));
+                    }).then(function (data) {
+                        extendWhereList = data;
+                        console.log('extendWhereList', extendWhereList);
+                        return new Promise(function (resolve, reject) {
+                            resolve(extendWhereScript.replace("ExtendWhereList", extendWhereList));
                         }).then(function (data) {
-                            extendWhereList = data;
-                            console.log('extendWhereList', extendWhereList);
-                            return new Promise(function (resolve, reject) {
-                                resolve(extendWhereScript.replace("ExtendWhereList", extendWhereList));
+                            extendWhereScript = data;
+                            console.log(extendWhereScript);
+                            // GET default ExtendWhereDates script
+                            $.ajax({
+                                url: "./config/ExtendWhereDates.txt",
+                                success: function (data) {
+                                }
                             }).then(function (data) {
-                                extendWhereScript = data;
-                                console.log(extendWhereScript);
-                                // GET default ExtendWhereDates script
-                                $.ajax({
-                                    url: "./config/ExtendWhereDates.txt",
-                                    success: function (data) {
-                                    }
-                                }).then(function (data) {
-                                    console.log("dates", data);
-                                    extendWhereDatesScript = data;
-                                    // loop through rows selected and create ExtendWhereDates script
-                                    return new Promise(function (resolve, reject) {
-                                        for (var i = 0; i < rows.length; i++) {
-                                            if (rows[i].Type === "Date") {
-                                                extendWhereDatesList += "'" + rows[i].Field + "',";
-                                            }
+                                console.log("dates", data);
+                                extendWhereDatesScript = data;
+                                // loop through rows selected and create ExtendWhereDates script
+                                return new Promise(function (resolve, reject) {
+                                    for (var i = 0; i < rows.length; i++) {
+                                        if (rows[i].Type === "Date") {
+                                            extendWhereDatesList += "'" + rows[i].Field + "',";
                                         }
-                                        resolve(extendWhereDatesList.slice(",", -1));
+                                    }
+                                    resolve(extendWhereDatesList.slice(",", -1));
+                                }).then(function (data) {
+                                    extendWhereDatesList = data;
+                                    console.log('extendWhereDatesList', extendWhereDatesList);
+                                    return new Promise(function (resolve, reject) {
+                                        resolve(extendWhereDatesScript.replace("ExtendWhereDatesList", extendWhereDatesList));
                                     }).then(function (data) {
-                                        extendWhereDatesList = data;
-                                        console.log('extendWhereDatesList', extendWhereDatesList);
-                                        return new Promise(function (resolve, reject) {
-                                            resolve(extendWhereDatesScript.replace("ExtendWhereDatesList", extendWhereDatesList));
+                                        extendWhereDatesScript = data;
+                                        console.log('extendWhereDatesScript', extendWhereDatesScript);
+                                        // Begin work to put script together
+                                        script += "///$tab Main\r\n";
+                                        script += "SET ThousandSep=',';\n";
+                                        script += "SET DecimalSep='.';\n";
+                                        script += "SET MoneyThousandSep=',';\n";
+                                        script += "SET MoneyDecimalSep='.';\n";
+                                        script += "SET MoneyFormat='#.##0,00 €;-#.##0,00 €';\n";
+                                        script += "SET TimeFormat='hh:mm:ss';\n";
+                                        script += "SET DateFormat='DD.MM.YYYY';\n";
+                                        script += "SET TimestampFormat='DD.MM.YYYY hh:mm:ss[.fff]';\n";
+                                        script += "SET MonthNames='Jan;Feb;Mrz;Apr;Mai;Jun;Jul;Aug;Sep;Okt;Nov;Dez';\n";
+                                        script += "SET DayNames='Mo;Di;Mi;Do;Fr;Sa;So';\n";
+                                        script += "SET LongMonthNames='Januar;Februar;März;April;Mai;Juni;Juli;August;September;Oktober;November;Dezember';\n";
+                                        script += "SET LongDayNames='Montag;Dienstag;Mittwoch;Donnerstag;Freitag;Samstag;Sonntag';\n";
+                                        script += "SET FirstWeekDay=0;\n";
+                                        script += "SET BrokenWeeks=0;\n";
+                                        script += "SET ReferenceDay=4;\n";
+                                        script += "SET FirstMonthOfYear=1;\n";
+                                        script += "SET CollationLocale='de-DE';\n";
+                                        script += "///$tab ODAG Section\r\n";
+                                        // Get default sub data and add to script
+                                        $.ajax({
+                                            url: "./config/Subs.txt",
+                                            success: function (data) {
+                                            }
                                         }).then(function (data) {
-                                            extendWhereDatesScript = data;
-                                            console.log('extendWhereDatesScript', extendWhereDatesScript);
-                                            
-                                            
-                                            //  Create new app!
-                                            scope.enigma.createApp('TestApp').then(function (newApp) {
-                                                var app;
-                                                console.log(newApp);
-                                                scope.enigma.openDoc(newApp.qAppId).then(function (conns) {
-                                                    app = conns;
-                                                    script = "";
-                                                    script += "///$tab Main\r\n";
-                                                    script += "///$tab Main\r\n";
-                                                    script += "SET ThousandSep=',';\n";
-                                                    script += "SET DecimalSep='.';\n";
-                                                    script += "SET MoneyThousandSep=',';\n";
-                                                    script += "SET MoneyDecimalSep='.';\n";
-                                                    script += "SET MoneyFormat='#.##0,00 €;-#.##0,00 €';\n";
-                                                    script += "SET TimeFormat='hh:mm:ss';\n";
-                                                    script += "SET DateFormat='DD.MM.YYYY';\n";
-                                                    script += "SET TimestampFormat='DD.MM.YYYY hh:mm:ss[.fff]';\n";
-                                                    script += "SET MonthNames='Jan;Feb;Mrz;Apr;Mai;Jun;Jul;Aug;Sep;Okt;Nov;Dez';\n";
-                                                    script += "SET DayNames='Mo;Di;Mi;Do;Fr;Sa;So';\n";
-                                                    script += "SET LongMonthNames='Januar;Februar;März;April;Mai;Juni;Juli;August;September;Oktober;November;Dezember';\n";
-                                                    script += "SET LongDayNames='Montag;Dienstag;Mittwoch;Donnerstag;Freitag;Samstag;Sonntag';\n";
-                                                    script += "SET FirstWeekDay=0;\n";
-                                                    script += "SET BrokenWeeks=0;\n";
-                                                    script += "SET ReferenceDay=4;\n";
-                                                    script += "SET FirstMonthOfYear=1;\n";
-                                                    script += "SET CollationLocale='de-DE';\n";
-                                                    script += "///$tab ODAG Section\r\n";
-                                                    // Get default sub data and add to script
-                                                    $.ajax({
-                                                        url: "./config/Subs.txt",
-                                                        success: function (data) {
-                                                        }
-                                                    }).then(function (data) {
-                                                        defaultSubs = data;
-                                                        return script += defaultSubs;
-                                                    }).then(function () {
-                                                        return script += "SET WHERE_PART = '';" + "\n" + "\n";
-                                                    }).then(function () {
-                                                        for (i = 0; i < odagBindingScripts.length; i++) {
-                                                            script += odagBindingScripts[i];
-                                                        }
-                                                        return script += extendWhereScript + extendWhereDatesScript;
-                                                    }).then(function () {
-                                                        // Get default trace data and add to script
-                                                        $.ajax({
-                                                            url: "./config/Trace.txt",
-                                                            success: function (data) {
-                                                            }
-                                                        }).then(function (data) {
-                                                            traceScript = data;
-                                                            return script += traceScript;
-                                                        }).then(function () {
-                                                            return app.setScript(script);
-                                                        }).then(function () {
-                                                            return app.doSave();
-                                                        }).then(function () {
-                                                            console.log(global);
-                                                            $('#startModal').appendTo("body");
-                                                            function show_modal() {
-                                                                $('#startModal').modal();
-                                                            }
-                                                            window.setTimeout(show_modal, 1000);
-                                                        }).catch(function (error) {
-                                                            console.error('Error' + error);
-                                                        });
-                                                    }).catch(function (error) {
-                                                        console.error('Error' + error);
-                                                    });
-                                                })
-                                            })
-                                        })
-                                    })
+                                            defaultSubs = data;
+                                            return script += defaultSubs;
+                                        }).then(function () {
+                                            return script += "SET WHERE_PART = '';" + "\n" + "\n";
+                                        }).then(function () {
+                                            for (i = 0; i < odagBindingScripts.length; i++) {
+                                                script += odagBindingScripts[i];
+                                            }
+                                            return script += extendWhereScript + extendWhereDatesScript;
+                                        }).then(function () {
+                                            // Get default trace data and add to script
+                                            $.ajax({
+                                                url: "./config/Trace.txt",
+                                                success: function (data) {
+                                                }
+                                            }).then(function (data) {
+                                                traceScript = data;
+                                                return script += traceScript;
+                                            }).then(function () {
+                                                resolve(script);
+                                            }).catch(function (error) {
+                                                console.error('Error' + error);
+                                            });
+                                        });
+                                    });
                                 });
                             });
-                        })
+                        });
                     });
                 });
-            }));
-        });
+            });
+        }));
     });
+}
+
+function createApp(script) {
+    //  Create new app!
+    var app;
+    var newAppId;
+    return new Promise(function(resolve, reject){
+    scopeEnigma.createApp('TestApp').then(function (newApp) {
+        console.log(newApp);
+        newAppId = newApp.qAppId;
+        scopeEnigma.openDoc(newApp.qAppId).then(function (conns) {
+            app = conns;
+            return app.setScript(script);
+        }).then(function () {
+            return app.doSave();
+        }).then(function () {
+            $('#openAppButton').attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
+            // Open next steps
+            $('#startModal').modal('show');
+            window.setTimeout(show_modal, 1000);
+            resolve(app);
+        })
+    })
+  })  
+}
 
 

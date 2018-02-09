@@ -21,6 +21,11 @@ body::-webkit-scrollbar {
     display: none; 
 }
 
+
+#collapseTwo {
+    white-space: pre-line;
+}
+
 /* Bootstrap Listbox */
 .state-icon {
     left: -5px;
