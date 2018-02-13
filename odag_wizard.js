@@ -50,24 +50,21 @@ require([
             if (newValue) {
                 scopeEnigma = newValue;
                 console.log("bound Enigma", scopeEnigma);
-            }
-        });
 
-        //write Apps in Listbox       
-        global.getAppList(function (list) {
-            $.each(list, function (key, value) {
-                var d = new Date();
-                var n = d.getMilliseconds(d);
-                console.log('app', n);
-                $("#selectApp").append("<option value='" + value.qDocId + "'>" + value.qDocName + "</option>");
-            });
-            var d = new Date();
-            var n = d.getMilliseconds(d);
-            console.log('picker', n);
-            $('#selectApp').selectpicker({
-                style: 'btn-default',
-                size: 10
-            });
+                //write Apps in Listbox       
+                scopeEnigma.getDocList().then(function(list){
+                    console.log('List',list);
+                    $.each(list, function (key, value) {
+                        $("#selectApp").append("<option value='" + value.qDocId + "'>" + value.qDocName + "</option>");
+                    });
+                    $('#selectApp').selectpicker({
+                        style: 'btn-default',
+                        size: 10
+                    });
+                    $('#selectApp').selectpicker('refresh');
+                    console.log('picker');
+                });
+            }
         });
         //Select Event for selectApp
         $('#selectApp').on('changed.bs.select', function () {
