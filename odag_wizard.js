@@ -36,7 +36,7 @@ require([
 ],
 
     function (qlik, $, selectpicker) {
-
+        console.log($().jquery);
         var global = qlik.getGlobal(config);            //Get Global Context
         var app;                                        //Keeps App Context
         var vselapp;                                    //Keeps selected app
@@ -53,12 +53,17 @@ require([
             }
         });
 
-
         //write Apps in Listbox       
         global.getAppList(function (list) {
             $.each(list, function (key, value) {
+                var d = new Date();
+                var n = d.getMilliseconds(d);
+                console.log('app', n);
                 $("#selectApp").append("<option value='" + value.qDocId + "'>" + value.qDocName + "</option>");
             });
+            var d = new Date();
+            var n = d.getMilliseconds(d);
+            console.log('picker', n);
             $('#selectApp').selectpicker({
                 style: 'btn-default',
                 size: 10
@@ -70,7 +75,6 @@ require([
             console.log('selected app id:', vselapp);
             app = qlik.openApp(vselapp, config);
             vRowNum = 1;
-
             //Create first Row
             var newrowcontent = '';
             newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
@@ -79,7 +83,6 @@ require([
             newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class="glyphicon glyphicon-plus"></span></a></div></td></tr>';
             $('#tablecontent').empty();
             $('#tablecontent').append(newrowcontent);
-
             createRow(vRowNum);
         });
 
@@ -137,7 +140,7 @@ require([
             createScript().then(function (script) {
                 $("#scriptButton").removeClass("glyphicon glyphicon-plus").addClass("glyphicon glyphicon-minus");
                 $("#collapseTwo").empty();
-                $("#collapseTwo").append('<br><br><p>">' + script + 'style=""</p>');
+                $("#collapseTwo").append('<br><br><p>">' + script + '</p>');
             })
         })
         // Populate script on header click
@@ -305,24 +308,24 @@ function createApp(script) {
     //  Create new app!
     var app;
     var newAppId;
-    return new Promise(function(resolve, reject){
-    scopeEnigma.createApp('TestApp').then(function (newApp) {
-        console.log(newApp);
-        newAppId = newApp.qAppId;
-        scopeEnigma.openDoc(newApp.qAppId).then(function (conns) {
-            app = conns;
-            return app.setScript(script);
-        }).then(function () {
-            return app.doSave();
-        }).then(function () {
-            $('#openAppButton').attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
-            // Open next steps
-            $('#startModal').modal('show');
-            window.setTimeout(show_modal, 1000);
-            resolve(app);
+    return new Promise(function (resolve, reject) {
+        scopeEnigma.createApp('TestApp').then(function (newApp) {
+            console.log(newApp);
+            newAppId = newApp.qAppId;
+            scopeEnigma.openDoc(newApp.qAppId).then(function (conns) {
+                app = conns;
+                return app.setScript(script);
+            }).then(function () {
+                return app.doSave();
+            }).then(function () {
+                console.log("new app saved:", newAppId);
+                $('#openAppButton').attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
+                // Open next steps
+                $('#startModal').modal('show');
+                resolve(app);
+            })
         })
     })
-  })  
 }
 
 

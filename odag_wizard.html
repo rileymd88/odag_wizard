@@ -17,8 +17,6 @@
     <link href="css/effect.css" rel="stylesheet" />
     <!-- <script src="js/leonardo-ui.js" type="text/javascript"></script> -->
     <script data-main="odag_wizard.js" src="/resources/assets/external/requirejs/require.js"></script>
-
-
 </head>
 
 <body>
@@ -34,7 +32,6 @@
                 <a class="navbar-brand">
                     <img height="20" alt="Brand" src="img/logo_Qlik.png">
                 </a>
-
             </div>
             <div class="collapse navbar-collapse" id="navbar-ex-collapse">
                 <ul class="nav navbar-nav navbar-right"></ul>
@@ -43,7 +40,6 @@
                     <img src="img/header2.png" style="position: absolute;" />
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -83,7 +79,8 @@
                         <div id="todo1">
                             <div class="row" style="border-bottom: solid 1px #ddd; padding:0px 20px 0px 20px;">
                                 <div class="col-xs-12 selbody">
-                                    <select class="selectpicker" id="selectApp" title="Select an App" data-live-search="true" data-title="Select an app" data-size="false"></select>
+                                    <select class="selectpicker" id="selectApp" title="Select an App" data-live-search="true" data-title="Select an app" data-size="false">
+                                    </select>
                                 </div>
                                 <div id="Fieldselection">
                                     <div class="col-xs-12">
@@ -145,39 +142,47 @@
                                     <h4 class="modal-title">Qlik ODAG Wizard</h4>
                                 </div>
                                 <div class="modal-body">
-
-                                    <div class="card">
-                                        <h4 class="card-header">Open newly created ODAG app</h4>
-                                        <div class="card-body">
-                                            <p class="card-text">This app will contain auto-generated ODAG script which was generated based on
-                                                your selections in the wizard. The "Open App" button in the right corner
-                                                below will bring you into the new app's script editor.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <br>
-
+                                    <img src="img/Client_Gray.png" height="44" width="44" style="float:left;"></img>
                                     <div class="card">
                                         <h4 class="card-header">Add Data Load Script</h4>
                                         <div class="card-body">
-                                            <p class="card-text">Add the detailed data load script you would like to have for your analysis app
-                                                in the newly created ODAG app</p>
+                                            <p class="card-text">Add the detailed data load script in the newly created ODAG app in the section
+                                                named "Fact"</p>
                                         </div>
                                     </div>
                                     <br>
-                                    <div class="card" ">
-                                        <h4 class="card-header ">Add Where Clause</h4>
-                                        <div class="card-body ">
-                                            <p class="card-text ">Add the variables $(WHERE_PART) and $(WHERE_DTPART) into your script</p>
+                                    <img src="img/Analysis_gray.png" style="float:left;" height="44" width="44"></img>
+                                    <div class="card">
+                                        <h4 class="card-header">Add Where Clause</h4>
+                                        <div class="card-body">
+                                            <p class="card-text">Add the variables $(WHERE_PART) and $(WHERE_DTPART) into your script</p>
                                         </div>
                                     </div>
+                                    <br>
+                                    <img src="img/Data_gray.png" style="float:left;" height="44" width="44"> </img>
+                                    <div class="card" style="margin:20px;">
+                                        <h4 class="card-header">Add Dimensions</h4>
+                                        <div class="card-body">
+                                            <p class="card-text">Add dimensions into the application and use where exists</p>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <img src="img/BigData_Gray.png" style="float:left;" height="44" width="44"></img>
+                                    <div class="card">
+                                        <h4 class="card-header">Add ODAG Navigation Links</h4>
+                                        <div class="card-body">
+                                            <p class="card-text">Revert back to your aggregated selection app and set up the ODAG navigation links</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="modal-footer ">
-                                    <a href=" " id="openAppButton " class="btn btn-info " role="button ">Open App</a>
+                                    <a href="" id="openAppButton " class="btn btn-info " role="button ">Open App</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 </body>
 </html>

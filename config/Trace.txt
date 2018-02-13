@@ -1,0 +1,15 @@
+
+TRACE Generated WHERE clause: ;
+TRACE $(WHERE_PART);
+
+TRACE Generated WHERE clause for Dates: ;
+TRACE $(WHERE_DTPART);
+
+///$tab Fact
+// In this section you will need to add the detailed data load script and then add the variables $(WHERE_PART) and $(WHERE_DTPART) into your script
+
+///$tab Dimensional Data
+// In this section you will need to add dimensions into the application and use where exists to only load the dimensions which exist;
+
+
+

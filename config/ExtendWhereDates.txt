@@ -1,0 +1,9 @@
+
+FOR EACH fldname IN ExtendWhereDatesList
+  LET vallist = $(fldname);
+  WHEN (IsNull(vallist)) LET vallist = '';
+  IF len(vallist) > 0 THEN
+    CALL ExtendWhereDates('$(fldname)','vallist');
+  ENDIF
+NEXT fldname
+

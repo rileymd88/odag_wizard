@@ -1,0 +1,8 @@
+
+FOR EACH fldname IN ExtendWhereList
+  LET vallist = $(fldname);
+  WHEN (IsNull(vallist)) LET vallist = '';
+  IF len(vallist) > 0 THEN
+    CALL ExtendWhere('$(fldname)','vallist');
+  ENDIF
+NEXT fldname
