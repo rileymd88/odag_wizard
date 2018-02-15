@@ -1,7 +1,20 @@
 {
-    "config": [
+    "config": 
         {
-            "odagQuoteWrapping": 0
+            "odagQuoteWrapping": 0,
+            "dataSources": [
+                {
+                    "dataSourceName": "Google Big Query",
+                    "dataSourceId": 1
+                },
+                {
+                    "dataSourceName": "SQL",
+                    "dataSourceId": 2
+                },
+                {
+                    "dataSourceName": "QVD",
+                    "dataSourceId": 3
+                }
+            ]
         }
-    ]
 }

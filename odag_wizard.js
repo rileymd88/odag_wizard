@@ -2,6 +2,8 @@ var rootPath = window.location.hostname;
 var portUrl = "80";
 var newAppId;
 var clipboard = new Clipboard('.zero-clipboard');
+var dataSource;
+var subFolder;
 
 if (window.location.port == "") {
     if ("https:" == window.location.protocol)
@@ -24,6 +26,15 @@ var config = {
     isSecure: window.location.protocol === "https:"
 };
 
+var mainConfig;
+
+$.ajax({
+    url: "./config/config.json",
+    success: function (data) {
+        mainConfig = data;
+    }
+})
+
 console.log('running');
 require.config({
     baseUrl: (config.isSecure ? "https://" : "http://") + config.host + (config.port ? ":" + config.port : "") + config.prefix + "resources",
@@ -43,6 +54,16 @@ require([
         var app;                                        //Keeps App Context
         var vselapp;                                    //Keeps selected app
         var vRowNum = 1;                                //Keeps Amount of rows for Fieldselections
+        // Initiate select pickers
+        $('#selectApp').selectpicker({
+            style: 'btn-default',
+            size: 10
+        });
+        $('#selectDataSource').selectpicker({
+            style: 'btn-default',
+            size: 10
+        });
+
 
         // Make connection to Enigma and watch for scope changes
         var scope = $('body').scope();
@@ -52,23 +73,25 @@ require([
             if (newValue) {
                 scopeEnigma = newValue;
                 console.log("bound Enigma", scopeEnigma);
-
-                //write Apps in Listbox       
                 scopeEnigma.getDocList().then(function (list) {
                     console.log('List', list);
+                    //write Apps in Listbox  
+                    console.log('list', JSON.stringify(list));
                     $.each(list, function (key, value) {
                         $("#selectApp").append("<option value='" + value.qDocId + "'>" + value.qDocName + "</option>");
                     });
-                    $('#selectApp').selectpicker({
-                        style: 'btn-default',
-                        size: 10
-                    });
                     $('#selectApp').selectpicker('refresh');
-                    console.log('picker');
+                    //write data Sources in Listbox
+                    console.log('data.dataSources', JSON.stringify(mainConfig.config.dataSources)); 
+                    $.each(mainConfig.config.dataSources, function(key, value){
+                        console.log('sources', value.dataSourceId + " " + value.dataSourceName);
+                        $("#selectDataSource").append("<option value='" + value.dataSourceId + "'>" + value.dataSourceName + "</option>");
+                    })
+                    $("#selectDataSource").selectpicker('refresh');
                 });
             }
         });
-        //Select Event for selectApp
+        //Select app
         $('#selectApp').on('changed.bs.select', function () {
             vselapp = $(this).val();
             console.log('selected app id:', vselapp);
@@ -83,6 +106,24 @@ require([
             $('#tablecontent').empty();
             $('#tablecontent').append(newrowcontent);
             createRow(vRowNum);
+        });
+        // Select data source
+        $('#selectDataSource').on('changed.bs.select', function () {
+            return new Promise(function (resolve, reject){
+                resolve($(this).val());
+            }).then(function(ds){
+                // Set sub folder location based on data source
+                dataSource = ds;
+                if(dataSource === 1) {
+                    subFolder = 'Google_Big_Query';
+                }
+                else if(dataSource === 2) {
+                    subFolder = 'SQL';
+                }
+                else if(dataSource === 3) {
+                    subFolder = 'QVD';
+                }
+            })
         });
 
         //Create a new Row and run selectpicker
@@ -271,7 +312,7 @@ function createScript() {
                                         script += "///$tab ODAG Section\r\n";
                                         // Get default sub data and add to script
                                         $.ajax({
-                                            url: "./config/Subs.txt",
+                                            url: "./config/" + subFolder + "/Subs.txt",
                                             success: function (data) {
                                             }
                                         }).then(function (data) {

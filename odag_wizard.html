@@ -60,17 +60,17 @@
                                 </div>
                                 <div id="explanation3">
                                     <div class="offer-content">
-                                        <h3>Please define the source you like to extract.</h3>
-                                        <p>Within this dialog you are able to define the source you like to extract. It is possible
-                                            to extract
-                                            <b>tables</b> from Cloudera. In order to get a working application please make at
-                                            least a selection for all fields. The
-                                            <b>explanation</b> will guide you through the selection steps.</p>
+                                        <h3>Please select your selection app from the dropdown list below</h3>
+                                        <p>Within this wizard you will be able to create the <b>ODAG Load Script.</b> The
+                                            explanation below will guide you through this process</p>
                                         <ul style="padding-left: 40px;">
-                                            <li>green values: These are the selected values</li>
-                                            <li>white values: These are values which match to your selection</li>
-                                            <li>grey values: There values doesn't match to your selection</li>
+                                            <li>1: Create selection app (this should be done before you use this wizard)</li>
+                                            <li>2: Select the selection app created in step 1 in the dropdown below</li>
+                                            <li>3: Fill out the fields and data source type</li>
+                                            <li>4: Click on the Create Template App button to create your ODAG Load Script app</li>
+                                            <li>5: Open the newly created app and edit the script accordingly (there will be detailed instructions in the script)</li>
                                         </ul>
+                
                                     </div>
                                 </div>
                             </div>
@@ -81,6 +81,10 @@
                             <div class="row" style="border-bottom: solid 1px #ddd; padding:0px 20px 0px 20px;">
                                 <div class="col-xs-12 selbody">
                                     <select class="selectpicker" id="selectApp" title="Select an App" data-live-search="true" data-title="Select an app" data-size="false">
+                                    </select>
+                                </div>
+                                <div class="col-xs-12 selbody">
+                                    <select class="selectpicker" id="selectDataSource" title="Select data source" data-live-search="true" data-title="Select data source" data-size="false">
                                     </select>
                                 </div>
                                 <div id="Fieldselection">
@@ -130,6 +134,8 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                    
                 </div>
                 <!-- Script Modal -->
                 <div id="scriptModal" class="modal fade bd-example-modal-lg">
