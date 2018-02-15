@@ -16,6 +16,7 @@
     <link href="css/wizard.css" rel="stylesheet" />
     <link href="css/effect.css" rel="stylesheet" />
     <!-- <script src="js/leonardo-ui.js" type="text/javascript"></script> -->
+    <script src="js/clipboard.min.js"></script>
     <script data-main="odag_wizard.js" src="/resources/assets/external/requirejs/require.js"></script>
 </head>
 
@@ -112,36 +113,48 @@
 
                             </div>
                             <div class="row" style="margin:30px 30px 30px 30px;">
-                                <div id="accordion" role="tablist" aria-multiselectable="true">
-                                    <div class="card">
-                                        <div class="card-header" role="tab" id="headingTwo">
-                                            <h5 class="mb-0">
-                                                <button type="button" class="btn btn-default" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false"
-                                                    aria-controls="collapseTwo" style="float:left;">
-                                                    <span id="scriptButton" style="margin-right:10px;" class="glyphicon glyphicon-plus"></span>Preview Auto-Generated Load Script
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
-                                        </div>
+                                <div class="card">
+                                    <div class="card-header" role="tab" id="headingTwo">
+                                        <h5 class="mb-0">
+                                            <button type="button" id="showScriptButton" class="btn btn-default" aria-expanded="false" aria-controls="collapseTwo" style="float:left;">
+                                                <span id="scriptButton" style="margin-right:10px;" class="glyphicon glyphicon-plus"></span>Show Script
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
                                     </div>
                                 </div>
+
                                 <button id="ApplySelectedTable" type="button" class="btn btn-default" style="float:right;">
-                                    <span style="margin-right:10px;" class="glyphicon glyphicon-ok"></span>Create App</button>
+                                    <span style="margin-right:10px;" class="glyphicon glyphicon-ok"></span>Create Template App</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Next steps dialoque -->
-                <div id="startModal" class="modal fade">
-                    <div id="welcome" class="modal-dialog modal-lg">
-                        <div class="modal-dialog">
+                <!-- Script Modal -->
+                <div id="scriptModal" class="modal fade bd-example-modal-lg">
+                    <div id="scriptModalWelcome" class="modal-dialog modal-lg">
+                        <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Qlik ODAG Wizard</h4>
+                                    <div id="loadScript">
+                                        <section id="script">
+                                            <pre style="text-align:left; overflow: hidden;"><div id="copytoclipboard" data-clipboard-target="#code" class="zero-clipboard"><span class="btn-clipboard with-example">Copy</span></div><code id="code"></code></pre>
+                                        </section>
+                                    </div>
                                 </div>
-                                <div class="modal-body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Next steps dialoque after app is created -->
+                <div id="startModal" class="modal fade bd-example-modal-lg">
+                    <div id="welcome" class="modal-dialog modal-lg">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                                     <img src="img/Client_Gray.png" height="44" width="44" style="float:left;"></img>
                                     <div class="card">
                                         <h4 class="card-header">Add Data Load Script</h4>
@@ -174,15 +187,13 @@
                                             <p class="card-text">Revert back to your aggregated selection app and set up the ODAG navigation links</p>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer ">
-                                    <a href="" id="openAppButton " class="btn btn-info " role="button ">Open App</a>
+                                    <div class="modal-footer "></div>
+                                    <a href="openAppButton" id="openAppButton " class="btn btn-info " role="button" style="float:right;">Open App</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 </body>
+
 </html>

@@ -1,5 +1,7 @@
 var rootPath = window.location.hostname;
 var portUrl = "80";
+var newAppId;
+var clipboard = new Clipboard('.zero-clipboard');
 
 if (window.location.port == "") {
     if ("https:" == window.location.protocol)
@@ -52,8 +54,8 @@ require([
                 console.log("bound Enigma", scopeEnigma);
 
                 //write Apps in Listbox       
-                scopeEnigma.getDocList().then(function(list){
-                    console.log('List',list);
+                scopeEnigma.getDocList().then(function (list) {
+                    console.log('List', list);
                     $.each(list, function (key, value) {
                         $("#selectApp").append("<option value='" + value.qDocId + "'>" + value.qDocName + "</option>");
                     });
@@ -129,22 +131,17 @@ require([
                 createApp(script).then(function (app) {
                     console.log(app);
                     newAppId = app.qAppId;
+                    $('#startModal').modal('show');
                 })
             })
         });
-        // Populate script on header click
-        $('#collapseTwo').on('show.bs.collapse', function () {
+        // On click of Show Script button
+        $('#showScriptButton').on('click', function () {
+            console.log("showScriptButton");
             createScript().then(function (script) {
-                $("#scriptButton").removeClass("glyphicon glyphicon-plus").addClass("glyphicon glyphicon-minus");
-                $("#collapseTwo").empty();
-                $("#collapseTwo").append('<br><br><p>">' + script + '</p>');
-            })
-        })
-        // Populate script on header click
-        $('#collapseTwo').on('hidden.bs.collapse', function () {
-            createScript().then(function (script) {
-                $("#scriptButton").removeClass("glyphicon glyphicon-minus").addClass("glyphicon glyphicon-plus");
-                $("#collapseTwo").empty();
+                $('#code').empty();
+                $('#code').append(script);
+                $('#scriptModal').modal('show');
             })
         })
     });
@@ -186,10 +183,12 @@ function createScript() {
                 odagBindingScript = data;
                 // loop through rows selected and create ODAG Bindings
                 for (var i = 0; i < rows.length; i++) {
-                    tmpScriptOne = odagBindingScript.replace(/OdagField/g, rows[i].Field);
-                    tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
-                    finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
-                    odagBindingScripts.push(finalScript);
+                    if (rows[i].Field != "nothing selected") {
+                        tmpScriptOne = odagBindingScript.replace(/OdagField/g, rows[i].Field);
+                        tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
+                        finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
+                        odagBindingScripts.push(finalScript);
+                    }
                 }
                 console.log(odagBindingScripts);
             }).then(function () {
@@ -203,7 +202,7 @@ function createScript() {
                     // loop through rows selected and create ExtendWhere script
                     return new Promise(function (resolve, reject) {
                         for (var i = 0; i < rows.length; i++) {
-                            if (rows[i].Type === "String") {
+                            if (rows[i].Type === "String" && rows[i].Field != "nothing selected") {
                                 extendWhereList += "'" + rows[i].Field + "',";
                             }
                         }
@@ -212,7 +211,12 @@ function createScript() {
                         extendWhereList = data;
                         console.log('extendWhereList', extendWhereList);
                         return new Promise(function (resolve, reject) {
-                            resolve(extendWhereScript.replace("ExtendWhereList", extendWhereList));
+                            if (extendWhereList.valueOf() == "") {
+                                resolve("");
+                            }
+                            else {
+                                resolve(extendWhereScript.replace("ExtendWhereList", extendWhereList));
+                            }
                         }).then(function (data) {
                             extendWhereScript = data;
                             console.log(extendWhereScript);
@@ -227,16 +231,21 @@ function createScript() {
                                 // loop through rows selected and create ExtendWhereDates script
                                 return new Promise(function (resolve, reject) {
                                     for (var i = 0; i < rows.length; i++) {
-                                        if (rows[i].Type === "Date") {
+                                        if (rows[i].Type === "Date" && rows[i].Field != "nothing selected") {
                                             extendWhereDatesList += "'" + rows[i].Field + "',";
                                         }
                                     }
                                     resolve(extendWhereDatesList.slice(",", -1));
                                 }).then(function (data) {
                                     extendWhereDatesList = data;
-                                    console.log('extendWhereDatesList', extendWhereDatesList);
+                                    console.log('extendWhereDatesList', data);
                                     return new Promise(function (resolve, reject) {
-                                        resolve(extendWhereDatesScript.replace("ExtendWhereDatesList", extendWhereDatesList));
+                                        if (extendWhereDatesList.valueOf() == "") {
+                                            resolve("");
+                                        }
+                                        else {
+                                            resolve(extendWhereDatesScript.replace("ExtendWhereDatesList", extendWhereDatesList));
+                                        }
                                     }).then(function (data) {
                                         extendWhereDatesScript = data;
                                         console.log('extendWhereDatesScript', extendWhereDatesScript);
@@ -302,9 +311,7 @@ function createScript() {
 }
 
 function createApp(script) {
-    //  Create new app!
     var app;
-    var newAppId;
     return new Promise(function (resolve, reject) {
         scopeEnigma.createApp('TestApp').then(function (newApp) {
             console.log(newApp);
@@ -316,11 +323,11 @@ function createApp(script) {
                 return app.doSave();
             }).then(function () {
                 console.log("new app saved:", newAppId);
-                $('#openAppButton').attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
-                // Open next steps
-                $('#startModal').modal('show');
+                return $("a[href='openAppButton']").attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
+            }).then(function (e) {
+                console.log('e', e);
                 resolve(app);
-            })
+            });
         })
     })
 }

@@ -23,16 +23,6 @@ SUB ExtendWhereDates(Name, ValVarName)
 END SUB;
 
 // DO NOT ALTER THIS SUBROUTINE
-SUB FromTable(Name, ValVarName)
-  LET T = Name & '_COLNAME';
-  LET ColName = $(T);
-  LET TabValue = $(ValVarName);
-  IF len(TabValue) > 0 THEN
-  	  	LET FROM_PART = '$(TabValue)';
-    ENDIF
-END SUB;
-
-// DO NOT ALTER THIS SUBROUTINE
 SUB BuildValueList(VarName, TableName, ColName, QuoteChrNum)
   IF ($(QuoteChrNum) = 0) THEN
     LET LOADEXPR = 'Concat($(ColName),' & chr(39) & ',' & chr(39) & ') AS CombinedData';
