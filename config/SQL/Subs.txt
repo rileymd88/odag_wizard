@@ -5,9 +5,9 @@ SUB ExtendWhere(Name, ValVarName)
   LET Values = $(ValVarName);
   IF len(Values) > 0 THEN
   	IF len(WHERE_PART) > 0 THEN
-    	LET WHERE_PART = '$(WHERE_PART) AND $(ColName) IN ( $(Values) )';
+    	LET WHERE_PART = '$(WHERE_PART) AND '&Chr(34)&'$(ColName)'&Chr(34)&' IN ( $(Values) )';
     ELSE
-    	LET WHERE_PART = ' WHERE $(ColName) IN ( $(Values) )';
+    	LET WHERE_PART = ' WHERE '&Chr(34)&'$(ColName)'&Chr(34)&' IN ( $(Values) )';
     ENDIF
   ENDIF
 END SUB;
@@ -18,7 +18,7 @@ SUB ExtendWhereDates(Name, ValVarName)
   LET ColName = $(T);
   LET Values = $(ValVarName);
   IF len(Values) > 0 THEN
-  	  	LET WHERE_DTPART = ' AND $(ColName) IN ( $(Values))';
+  	  	LET WHERE_DTPART = ' AND '&Chr(34)&'$(ColName)'&Chr(34)&' IN ( $(Values))';
     ENDIF
 END SUB;
 

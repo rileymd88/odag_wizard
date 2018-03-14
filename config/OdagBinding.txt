@@ -1,10 +1,10 @@
 
-SET [OdagField] ='';
+SET OdagFieldTrimmed ='';
 OdagBinding:
 LOAD * INLINE [
 VAL
 $(OptionField_OdagField){"quote": "", "delimiter": ""}
 ];
-SET [OdagField_COLNAME]='OdagField';
-CALL BuildValueList('OdagField', 'OdagBinding', 'VAL', 0);		// 39 is for single quote wrapping values
+SET OdagFieldTrimmed_COLNAME='OdagField';
+CALL BuildValueList('OdagFieldTrimmed', 'OdagBinding', 'VAL', 39);		// 39 is for single quote wrapping values
 

@@ -3,7 +3,7 @@ var portUrl = "80";
 var newAppId;
 var clipboard = new Clipboard('.zero-clipboard');
 var dataSource;
-var subFolder;
+var dataSourceFolder;
 
 if (window.location.port == "") {
     if ("https:" == window.location.protocol)
@@ -108,21 +108,22 @@ require([
             createRow(vRowNum);
         });
         // Select data source
-        $('#selectDataSource').on('changed.bs.select', function () {
+        $('#selectDataSource').on('changed.bs.select', function (selectDataSource) {
             return new Promise(function (resolve, reject){
-                resolve($(this).val());
+                resolve($('#selectDataSource').val());
             }).then(function(ds){
                 // Set sub folder location based on data source
                 dataSource = ds;
-                if(dataSource === 1) {
-                    subFolder = 'Google_Big_Query';
+                if(dataSource == 1) {
+                    dataSourceFolder = 'Google_Big_Query';
                 }
-                else if(dataSource === 2) {
-                    subFolder = 'SQL';
+                if(dataSource == 2) {
+                    dataSourceFolder = 'SQL';
                 }
-                else if(dataSource === 3) {
-                    subFolder = 'QVD';
+                if(dataSource == 3) {
+                    dataSourceFolder = 'QVD';
                 }
+                console.log('dataSourceFolder',dataSourceFolder);
             })
         });
 
@@ -312,7 +313,7 @@ function createScript() {
                                         script += "///$tab ODAG Section\r\n";
                                         // Get default sub data and add to script
                                         $.ajax({
-                                            url: "./config/" + subFolder + "/Subs.txt",
+                                            url: "./config/" + dataSourceFolder + "/Subs.txt",
                                             success: function (data) {
                                             }
                                         }).then(function (data) {
@@ -328,7 +329,7 @@ function createScript() {
                                         }).then(function () {
                                             // Get default trace data and add to script
                                             $.ajax({
-                                                url: "./config/Trace.txt",
+                                                url: "./config/" + dataSourceFolder + "/Trace.txt",
                                                 success: function (data) {
                                                 }
                                             }).then(function (data) {

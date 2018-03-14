@@ -1,0 +1,45 @@
+
+TRACE Generated WHERE clause: ;
+TRACE $(WHERE_PART);
+
+TRACE Generated WHERE clause for Dates: ;
+TRACE $(WHERE_DTPART);
+
+///$tab Fact
+// In this section you will need to add the detailed data load script and then add the variables $(WHERE_PART) and $(WHERE_DTPART) into your script. Below is an example script:
+// LIB CONNECT TO 'ODBC Source';
+// Fact:
+// LOAD 
+// dimension1,
+// dimension2,
+// dimension3,
+// measure1,
+// measure2;
+// SELECT 
+// dimension1,
+// dimension2,
+// dimension3,
+// measure1,
+// measure2
+// FROM `table` 
+// $(WHERE_PART)
+// $(WHERE_DTPART);
+
+///$tab Dimensional Data
+// In this section you will need to add dimensions into the application and use where exists to only load the dimensions which exist. Below is an example script:
+// LIB CONNECT TO 'ODBC Source';
+// Dimensions:
+// LOAD 
+// dimension1,
+// dimension1_description;
+// SELECT 
+// dimension1,
+// dimension2,
+// dimension3,
+// measure1,
+// measure2
+// FROM `table_dimensions`
+// WHERE EXISTS(dimension1);
+
+
+
