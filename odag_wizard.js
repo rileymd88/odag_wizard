@@ -226,13 +226,16 @@ function createScript() {
                 // loop through rows selected and create ODAG Bindings
                 for (var i = 0; i < rows.length; i++) {
                     if (rows[i].Field != "nothing selected") {
-                        tmpScriptOne = odagBindingScript.replace(/OdagField/g, rows[i].Field);
-                        tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
-                        finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
-                        odagBindingScripts.push(finalScript);
+                        
+                            trimmedField = rows[i].Field.replace(/[^a-z0-9]/ig, '');
+                            tmpScript = odagBindingScript.replace(/Trimmed/g, trimmedField);
+                            tmpScriptOne = tmpScript.replace(/OdagField/g, rows[i].Field);
+                            tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
+                            finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
+                            odagBindingScripts.push(finalScript);
                     }
                 }
-                console.log(odagBindingScripts);
+                console.log('odagBindingScripts', odagBindingScripts);
             }).then(function () {
                 // Get default ExtendWhere script
                 $.ajax({
@@ -245,7 +248,7 @@ function createScript() {
                     return new Promise(function (resolve, reject) {
                         for (var i = 0; i < rows.length; i++) {
                             if (rows[i].Type === "String" && rows[i].Field != "nothing selected") {
-                                extendWhereList += "'" + rows[i].Field + "',";
+                                extendWhereList += "'" + rows[i].Field.replace(/[^a-z0-9]/ig, '') + "',";
                             }
                         }
                         resolve(extendWhereList.slice(",", -1));
@@ -274,7 +277,7 @@ function createScript() {
                                 return new Promise(function (resolve, reject) {
                                     for (var i = 0; i < rows.length; i++) {
                                         if (rows[i].Type === "Date" && rows[i].Field != "nothing selected") {
-                                            extendWhereDatesList += "'" + rows[i].Field + "',";
+                                            extendWhereDatesList += "'" + rows[i].Field.replace(/[^a-z0-9]/ig, '') + "',";
                                         }
                                     }
                                     resolve(extendWhereDatesList.slice(",", -1));
