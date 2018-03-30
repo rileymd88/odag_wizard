@@ -69,7 +69,7 @@ require([
         var scope = $('body').scope();
         scopeEnigma = null;
         console.log("global.session", global.session);
-        scope.$watch(function () { return global.session.__enigmaApp }, function (newValue, oldValue) {
+        scope.$watch(function () { return global.session.__enigmaApp}, function (newValue, oldValue) {
             if (newValue) {
                 scopeEnigma = newValue;
                 console.log("bound Enigma", scopeEnigma);
