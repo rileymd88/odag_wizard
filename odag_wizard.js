@@ -96,6 +96,19 @@ require([
             vselapp = $(this).val();
             console.log('selected app id:', vselapp);
             app = qlik.openApp(vselapp, config);
+            
+            // Get Measures
+            app.createGenericObject({
+                qMeasureListDef : {
+                
+                                        qType: "measure", qData: { title: "/title", tags: "/tags" }
+                
+                                    }
+                
+                }, function(reply){
+                //take care of result
+                    console.log(reply);
+            });
             vRowNum = 1;
             //Create first Row
             var newrowcontent = '';
@@ -226,7 +239,6 @@ function createScript() {
                 // loop through rows selected and create ODAG Bindings
                 for (var i = 0; i < rows.length; i++) {
                     if (rows[i].Field != "nothing selected") {
-                        
                             trimmedField = rows[i].Field.replace(/[^a-z0-9]/ig, '');
                             tmpScript = odagBindingScript.replace(/Trimmed/g, trimmedField);
                             tmpScriptOne = tmpScript.replace(/OdagField/g, rows[i].Field);
@@ -370,6 +382,7 @@ function createApp(script) {
                 console.log("new app saved:", newAppId);
                 return $("a[href='openAppButton']").attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
             }).then(function (e) {
+                
                 console.log('e', e);
                 resolve(app);
             });
