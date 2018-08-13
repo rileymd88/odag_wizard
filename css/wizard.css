@@ -1,6 +1,11 @@
-﻿.board{
-    width: 75%;
-margin: 0px auto;
+﻿html *
+{
+   font-family: "QlikView Sans", sans-serif;
+}
+
+.board{
+    width: 60%;
+margin: 20px auto;
 margin-bottom: 50px;
 min-height: 100%;
 background: #fff;
@@ -163,8 +168,6 @@ li.active span.round-tabs.five{
     background: transparent;
 }
 
-.tab-content{
-}
 .tab-pane{
    position: relative;
 }
@@ -287,7 +290,8 @@ transition: all 0.4s ease-in-out;
 	transform:rotate(30deg);
 }	
 .offer-content{
-	padding:0 20px 10px;
+    padding:1px;
+    border-bottom: 1px solid #d6d6d6;
 }
 @media (min-width: 487px) {
   .container {

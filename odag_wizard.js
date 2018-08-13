@@ -1,7 +1,7 @@
 var rootPath = window.location.hostname;
 var portUrl = "80";
 var newAppId;
-var clipboard = new Clipboard('.zero-clipboard');
+var clipboard = new Clipboard('#CopyCode');
 var dataSource;
 var dataSourceFolder;
 
@@ -45,11 +45,14 @@ require([
     "js/qlik",
     "jquery",
     "odag_wizard/js/bootstrap.min",
-    "odag_wizard/js/bootstrap-select.min"
+    "odag_wizard/js/bootstrap-select.min",
+    "odag_wizard/js/qvhighlight/highlight.pack",
+    "odag_wizard/js/qvhighlight/highlightjs-line-numbers.min"
 ],
 
     function (qlik, $, selectpicker) {
-        console.log($().jquery);
+
+
         var global = qlik.getGlobal(config);            //Get Global Context
         var app;                                        //Keeps App Context
         var vselapp;                                    //Keeps selected app
@@ -96,26 +99,13 @@ require([
             vselapp = $(this).val();
             console.log('selected app id:', vselapp);
             app = qlik.openApp(vselapp, config);
-            
-            // Get Measures
-            app.createGenericObject({
-                qMeasureListDef : {
-                
-                                        qType: "measure", qData: { title: "/title", tags: "/tags" }
-                
-                                    }
-                
-                }, function(reply){
-                //take care of result
-                    console.log(reply);
-            });
             vRowNum = 1;
             //Create first Row
             var newrowcontent = '';
             newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
             newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option>odo</option><option>odso</option><option>ods</option><option>odo</option><option>od</option></select></td>';
             newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option>String</option><option>Date</option></select></td>';
-            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class="glyphicon glyphicon-plus"></span></a></div></td></tr>';
+            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div></td></tr>';
             $('#tablecontent').empty();
             $('#tablecontent').append(newrowcontent);
             createRow(vRowNum);
@@ -169,7 +159,7 @@ require([
             newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
             newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option>odo</option><option>odso</option><option>ods</option><option>odo</option><option>od</option></select></td>';
             newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option>String</option><option>Date</option></select></td>';
-            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class="glyphicon glyphicon-plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="glyphicon glyphicon-minus"></span></a></div></td></tr>';
+            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="lui-icon lui-icon--minus"></span></a></div></td></tr>';
             $(newrowcontent).insertAfter('#' + $(this).closest("tr").attr('id'));
             createRow(vRowNum);
         });
@@ -181,7 +171,9 @@ require([
             console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
         });
         // Create script and app when Create App button is clicked
-        $("#ApplySelectedTable").click(function () {
+        $("#ApplySelectedTable").click(function () {  $('#startModal').modal('show'); });
+
+        $("#ApplySelectedTable____").click(function () {
             createScript().then(function (script) {
                 createApp(script).then(function (app) {
                     console.log(app);
@@ -196,7 +188,16 @@ require([
             createScript().then(function (script) {
                 $('#code').empty();
                 $('#code').append(script);
+
+
+
                 $('#scriptModal').modal('show');
+                console.log(hljs)
+                hljs.initHighlighting();
+                hljs.initLineNumbersOnLoad();
+                hljs.highlight();
+
+
             })
         })
     });
@@ -239,6 +240,7 @@ function createScript() {
                 // loop through rows selected and create ODAG Bindings
                 for (var i = 0; i < rows.length; i++) {
                     if (rows[i].Field != "nothing selected") {
+                        
                             trimmedField = rows[i].Field.replace(/[^a-z0-9]/ig, '');
                             tmpScript = odagBindingScript.replace(/Trimmed/g, trimmedField);
                             tmpScriptOne = tmpScript.replace(/OdagField/g, rows[i].Field);
@@ -382,7 +384,6 @@ function createApp(script) {
                 console.log("new app saved:", newAppId);
                 return $("a[href='openAppButton']").attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
             }).then(function (e) {
-                
                 console.log('e', e);
                 resolve(app);
             });

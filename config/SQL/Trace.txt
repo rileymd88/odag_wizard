@@ -23,8 +23,7 @@ TRACE $(WHERE_DTPART);
 // measure2
 // FROM `table` 
 // $(WHERE_PART)
-// $(WHERE_DTPART)
-//;
+// $(WHERE_DTPART);
 
 ///$tab Dimensional Data
 // In this section you will need to add dimensions into the application and use where exists to only load the dimensions which exist. Below is an example script:
