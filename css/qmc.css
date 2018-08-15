@@ -12573,36 +12573,6 @@ hr {
   user-drag: none;
   pointer-events: none;
 }
-@font-face {
-  font-family: 'QlikView Sans';
-  src: url(qmc/modules/../../qmc/fonts/qlikview-sans.ttf) format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'QlikView Sans';
-  src: url(qmc/modules/../../qmc/fonts/qlikview-sans-bold.ttf) format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'QlikView Sans';
-  src: url(qmc/modules/../../qmc/fonts/qlikview-sans-italic.ttf) format('truetype');
-  font-weight: normal;
-  font-style: italic;
-}
-@font-face {
-  font-family: 'QlikView Sans';
-  src: url(qmc/modules/../../qmc/fonts/qlikview-sans-bold-italic.ttf) format('truetype');
-  font-weight: bold;
-  font-style: italic;
-}
-@font-face {
-  font-family: 'LUI icons';
-  src: url(qmc/modules/../../qmc/fonts/lui-icons.ttf) format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 body,
 input,
 textarea,

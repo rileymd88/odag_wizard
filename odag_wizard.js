@@ -171,9 +171,9 @@ require([
             console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
         });
         // Create script and app when Create App button is clicked
-        $("#ApplySelectedTable").click(function () {  $('#startModal').modal('show'); });
+        //$("#ApplySelectedTable").click(function () {  $('#startModal').modal('show'); });
 
-        $("#ApplySelectedTable____").click(function () {
+        $("#ApplySelectedTable").click(function () {
             createScript().then(function (script) {
                 createApp(script).then(function (app) {
                     console.log(app);
@@ -382,7 +382,7 @@ function createApp(script) {
                 return app.doSave();
             }).then(function () {
                 console.log("new app saved:", newAppId);
-                return $("a[href='openAppButton']").attr('href', 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId);
+                return $("#openAppButton").attr('onclick', 'location.href= ' + '"' + 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId + '"');
             }).then(function (e) {
                 console.log('e', e);
                 resolve(app);
