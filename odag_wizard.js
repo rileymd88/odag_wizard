@@ -1,6 +1,7 @@
 var rootPath = window.location.hostname;
 var portUrl = "80";
 var newAppId;
+var selectionAppName;
 var clipboard = new Clipboard('#CopyCode');
 var dataSource;
 var dataSourceFolder;
@@ -35,7 +36,6 @@ $.ajax({
     }
 })
 
-console.log('running');
 require.config({
     baseUrl: (config.isSecure ? "https://" : "http://") + config.host + (config.port ? ":" + config.port : "") + config.prefix + "resources",
     paths: { app: (config.isSecure ? "https://" : "http://") + config.host + (config.port ? ":" + config.port : "") }
@@ -71,23 +71,17 @@ require([
         // Make connection to Enigma and watch for scope changes
         var scope = $('body').scope();
         scopeEnigma = null;
-        console.log("global.session", global.session);
-        scope.$watch(function () { return global.session.__enigmaApp}, function (newValue, oldValue) {
+        scope.$watch(function () { return global.session.__enigmaApp }, function (newValue, oldValue) {
             if (newValue) {
                 scopeEnigma = newValue;
-                console.log("bound Enigma", scopeEnigma);
                 scopeEnigma.getDocList().then(function (list) {
-                    console.log('List', list);
                     //write Apps in Listbox  
-                    console.log('list', JSON.stringify(list));
                     $.each(list, function (key, value) {
                         $("#selectApp").append("<option value='" + value.qDocId + "'>" + value.qDocName + "</option>");
                     });
                     $('#selectApp').selectpicker('refresh');
                     //write data Sources in Listbox
-                    console.log('data.dataSources', JSON.stringify(mainConfig.config.dataSources)); 
-                    $.each(mainConfig.config.dataSources, function(key, value){
-                        console.log('sources', value.dataSourceId + " " + value.dataSourceName);
+                    $.each(mainConfig.config.dataSources, function (key, value) {
                         $("#selectDataSource").append("<option value='" + value.dataSourceId + "'>" + value.dataSourceName + "</option>");
                     })
                     $("#selectDataSource").selectpicker('refresh');
@@ -97,36 +91,37 @@ require([
         //Select app
         $('#selectApp').on('changed.bs.select', function () {
             vselapp = $(this).val();
-            console.log('selected app id:', vselapp);
+            selectionAppName = $('#selectApp :selected').text();
+            console.log(selectionAppName);
             app = qlik.openApp(vselapp, config);
             vRowNum = 1;
             //Create first Row
             var newrowcontent = '';
-            newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
-            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option>odo</option><option>odso</option><option>ods</option><option>odo</option><option>od</option></select></td>';
-            newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option>String</option><option>Date</option></select></td>';
-            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div></td></tr>';
+            var newrowcontent = '';
+            newrowcontent = '<tr class="contentRow" id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
+            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option value="ods">Selected (green) values</option><option value="odo">Optional (white) values</option><option value="odso">Selected or optional values</option></select></td>';
+            newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option value="String">String</option><option value="Date">Date</option></select></td>';
+            newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="lui-icon lui-icon--minus"></span></a></div></td></tr>';
             $('#tablecontent').empty();
             $('#tablecontent').append(newrowcontent);
             createRow(vRowNum);
         });
         // Select data source
         $('#selectDataSource').on('changed.bs.select', function (selectDataSource) {
-            return new Promise(function (resolve, reject){
+            return new Promise(function (resolve, reject) {
                 resolve($('#selectDataSource').val());
-            }).then(function(ds){
+            }).then(function (ds) {
                 // Set sub folder location based on data source
                 dataSource = ds;
-                if(dataSource == 1) {
+                if (dataSource == 1) {
                     dataSourceFolder = 'Google_Big_Query';
                 }
-                if(dataSource == 2) {
+                if (dataSource == 2) {
                     dataSourceFolder = 'SQL';
                 }
-                if(dataSource == 3) {
+                if (dataSource == 3) {
                     dataSourceFolder = 'QVD';
                 }
-                console.log('dataSourceFolder',dataSourceFolder);
             })
         });
 
@@ -149,16 +144,15 @@ require([
                     size: 10
                 });
                 vRowNum++;
-                console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
             });
         };
 
         //Add another Row
         $("body").delegate('.add_left', 'click', function () {
             var newrowcontent = '';
-            newrowcontent = '<tr id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
-            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option>odo</option><option>odso</option><option>ods</option><option>odo</option><option>od</option></select></td>';
-            newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option>String</option><option>Date</option></select></td>';
+            newrowcontent = '<tr class="contentRow" id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
+            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option value="ods">Selected (green) values</option><option value="odo">Optional (white) values</option><option value="odso">Selected or optional values</option></select></td>';
+            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option value="String">String</option><option value="Date">Date</option></select></td>';
             newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="lui-icon lui-icon--minus"></span></a></div></td></tr>';
             $(newrowcontent).insertAfter('#' + $(this).closest("tr").attr('id'));
             createRow(vRowNum);
@@ -168,7 +162,7 @@ require([
         $("body").delegate('.add_right', 'click', function () {
             $('#' + $(this).closest("tr").attr('id')).remove();
             //Count # rows
-            console.log('Number of Rows:', $('#Fieldselection tr').length - 1);
+            vRowNum = vRowNum - 1;
         });
         // Create script and app when Create App button is clicked
         //$("#ApplySelectedTable").click(function () {  $('#startModal').modal('show'); });
@@ -176,7 +170,6 @@ require([
         $("#ApplySelectedTable").click(function () {
             createScript().then(function (script) {
                 createApp(script).then(function (app) {
-                    console.log(app);
                     newAppId = app.qAppId;
                     $('#startModal').modal('show');
                 })
@@ -184,20 +177,13 @@ require([
         });
         // On click of Show Script button
         $('#showScriptButton').on('click', function () {
-            console.log("showScriptButton");
             createScript().then(function (script) {
                 $('#code').empty();
                 $('#code').append(script);
-
-
-
                 $('#scriptModal').modal('show');
-                console.log(hljs)
                 hljs.initHighlighting();
                 hljs.initLineNumbersOnLoad();
-                hljs.highlight();
-
-
+                //hljs.highlight();
             })
         })
     });
@@ -217,19 +203,17 @@ function createScript() {
     return new Promise(function (resolve, reject) {
         return new Promise(function (resolve, reject) {
             rows = [];
-            $('table tr').each(function (i, n) {
+            $('.contentRow').each(function (i, n) {
                 var $row = $(n);
-                if (i != 0) {
-                    rows.push({
-                        Field: $row.find('button:eq(0)').text().slice(" ", -1),
-                        Option: $row.find('button:eq(1)').text().slice(" ", -1),
-                        Type: $row.find('button:eq(2)').text().slice(" ", -1)
-                    });
-                }
+                id = i + 1;
+                rows.push({
+                    Field: $row.find(`#selectField_${id}`).val(),
+                    Option: $row.find(`#Option_${id}`).val(),
+                    Type: $row.find(`#Type_${id}`).val()
+                });
             })
             resolve(rows);
         }).then((function () {
-            console.log(JSON.stringify(rows));
             // Get default ODAG Binding script
             $.ajax({
                 url: "./config/OdagBinding.txt",
@@ -240,16 +224,14 @@ function createScript() {
                 // loop through rows selected and create ODAG Bindings
                 for (var i = 0; i < rows.length; i++) {
                     if (rows[i].Field != "nothing selected") {
-                        
-                            trimmedField = rows[i].Field.replace(/[^a-z0-9]/ig, '');
-                            tmpScript = odagBindingScript.replace(/Trimmed/g, trimmedField);
-                            tmpScriptOne = tmpScript.replace(/OdagField/g, rows[i].Field);
-                            tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
-                            finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
-                            odagBindingScripts.push(finalScript);
+                        trimmedField = rows[i].Field.replace(/[^a-z0-9]/ig, '');
+                        tmpScript = odagBindingScript.replace(/Trimmed/g, trimmedField);
+                        tmpScriptOne = tmpScript.replace(/OdagField/g, rows[i].Field);
+                        tmpScriptTwo = tmpScriptOne.replace(/OptionField/g, rows[i].Option);
+                        finalScript = tmpScriptTwo.replace(/OdagQuoteWrapping/g, 0);
+                        odagBindingScripts.push(finalScript);
                     }
                 }
-                console.log('odagBindingScripts', odagBindingScripts);
             }).then(function () {
                 // Get default ExtendWhere script
                 $.ajax({
@@ -268,7 +250,6 @@ function createScript() {
                         resolve(extendWhereList.slice(",", -1));
                     }).then(function (data) {
                         extendWhereList = data;
-                        console.log('extendWhereList', extendWhereList);
                         return new Promise(function (resolve, reject) {
                             if (extendWhereList.valueOf() == "") {
                                 resolve("");
@@ -278,14 +259,12 @@ function createScript() {
                             }
                         }).then(function (data) {
                             extendWhereScript = data;
-                            console.log(extendWhereScript);
                             // GET default ExtendWhereDates script
                             $.ajax({
                                 url: "./config/ExtendWhereDates.txt",
                                 success: function (data) {
                                 }
                             }).then(function (data) {
-                                console.log("dates", data);
                                 extendWhereDatesScript = data;
                                 // loop through rows selected and create ExtendWhereDates script
                                 return new Promise(function (resolve, reject) {
@@ -297,7 +276,6 @@ function createScript() {
                                     resolve(extendWhereDatesList.slice(",", -1));
                                 }).then(function (data) {
                                     extendWhereDatesList = data;
-                                    console.log('extendWhereDatesList', data);
                                     return new Promise(function (resolve, reject) {
                                         if (extendWhereDatesList.valueOf() == "") {
                                             resolve("");
@@ -307,7 +285,6 @@ function createScript() {
                                         }
                                     }).then(function (data) {
                                         extendWhereDatesScript = data;
-                                        console.log('extendWhereDatesScript', extendWhereDatesScript);
                                         // Begin work to put script together
                                         script += "///$tab Main\r\n";
                                         script += "SET ThousandSep=',';\n";
@@ -372,8 +349,7 @@ function createScript() {
 function createApp(script) {
     var app;
     return new Promise(function (resolve, reject) {
-        scopeEnigma.createApp('TestApp').then(function (newApp) {
-            console.log(newApp);
+        scopeEnigma.createApp(`${selectionAppName}_Template`).then(function (newApp) {
             newAppId = newApp.qAppId;
             scopeEnigma.openDoc(newApp.qAppId).then(function (conns) {
                 app = conns;
@@ -381,10 +357,8 @@ function createApp(script) {
             }).then(function () {
                 return app.doSave();
             }).then(function () {
-                console.log("new app saved:", newAppId);
                 return $("#openAppButton").attr('onclick', 'location.href= ' + '"' + 'https://' + window.location.hostname + '/dataloadeditor/app/' + newAppId + '"');
             }).then(function (e) {
-                console.log('e', e);
                 resolve(app);
             });
         })
