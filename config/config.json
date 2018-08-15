@@ -1,7 +1,6 @@
 {
     "config": 
         {
-            "odagQuoteWrapping": 0,
             "dataSources": [
                 {
                     "dataSourceName": "Google_Big_Query",
