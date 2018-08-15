@@ -99,7 +99,7 @@ require([
             var newrowcontent = '';
             var newrowcontent = '';
             newrowcontent = '<tr class="contentRow" id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
-            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option value="ods">Selected (green) values</option><option value="odo">Optional (white) values</option><option value="odso">Selected or optional values</option></select></td>';
+            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"><option value="ods">Selected (green) values</option><option value="odo">Optional (white) values</option><option value="odso">Selected or optional values</option></select></td>';
             newrowcontent += ' <td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option value="String">String</option><option value="Date">Date</option></select></td>';
             newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="lui-icon lui-icon--minus"></span></a></div></td></tr>';
             $('#tablecontent').empty();
@@ -151,7 +151,7 @@ require([
         $("body").delegate('.add_left', 'click', function () {
             var newrowcontent = '';
             newrowcontent = '<tr class="contentRow" id=SelField_row_' + vRowNum + '><td id="SelField_row_Field' + vRowNum + '_Field"><select class="selectpicker" id="selectField_' + vRowNum + '" data-live-search="true" data-title="nothing selected" data-size="false"></select></td>';
-            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"<option value="ods">Selected (green) values</option><option value="odo">Optional (white) values</option><option value="odso">Selected or optional values</option></select></td>';
+            newrowcontent += '<td id="SelField_row_' + vRowNum + '_Option"><select id="Option_' + vRowNum + '" class="selectpicker"><option value="ods">Selected (green) values</option><option value="odo">Optional (white) values</option><option value="odso">Selected or optional values</option></select></td>';
             newrowcontent += '<td id="SelField_row_' + vRowNum + '_Type"><select id="Type_' + vRowNum + '" class="selectpicker"><option value="String">String</option><option value="Date">Date</option></select></td>';
             newrowcontent += '<td><div class="add_left"><a><span id="SelField_row_' + vRowNum + '_Add" class=" lui-icon lui-icon--plus"></span></a></div><div class="add_right"><a><span id="SelField_row_' + vRowNum + '_Delete" class="lui-icon lui-icon--minus"></span></a></div></td></tr>';
             $(newrowcontent).insertAfter('#' + $(this).closest("tr").attr('id'));
