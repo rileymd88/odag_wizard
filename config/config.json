@@ -4,7 +4,7 @@
             "odagQuoteWrapping": 0,
             "dataSources": [
                 {
-                    "dataSourceName": "Google Big Query",
+                    "dataSourceName": "Google_Big_Query",
                     "dataSourceId": 1
                 },
                 {

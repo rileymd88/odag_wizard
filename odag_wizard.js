@@ -113,14 +113,11 @@ require([
             }).then(function (ds) {
                 // Set sub folder location based on data source
                 dataSource = ds;
-                if (dataSource == 1) {
-                    dataSourceFolder = 'Google_Big_Query';
-                }
-                if (dataSource == 2) {
-                    dataSourceFolder = 'SQL';
-                }
-                if (dataSource == 3) {
-                    dataSourceFolder = 'QVD';
+                dataSourceListLength = mainConfig.config.dataSources.length;
+                for(i=0;i<dataSourceListLength;i++) {
+                    if(mainConfig.config.dataSources[i].dataSourceId == ds) {
+                        dataSourceFolder = mainConfig.config.dataSources[i].dataSourceName
+                    }
                 }
             })
         });
