@@ -83,7 +83,7 @@ Version: 1.0
 ![Step 19a](https://github.com/rileymd88/odag_wizard/blob/master/img/guide/Step 19b.png)
 
 Once the app is finished loading, you can click on the open in new tap icon on the right to open the new app
-![Step 19c](https://github.com/rileymd88/odag_wizard/blob/master/img/guide/Step 19b.png)
+![Step 19c](https://github.com/rileymd88/odag_wizard/blob/master/img/guide/Step 19c.png)
 
 20. Now we have created an ODAG app! It should contain only the data for the 3 customers we selected
 
