@@ -1,5 +1,5 @@
 # ODAG Wizard
-![Image of Logo](https://github.com/rileymd88/odag_wizard/blob/master/img/logo_grey.PNG)
+![Image of Logo](https://github.com/rileymd88/odag_wizard/blob/master/img/logo_grey.png)
 
 A solution which helps with the creation of Qlik ODAG Template apps
 
