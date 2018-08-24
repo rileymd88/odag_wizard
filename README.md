@@ -1,8 +1,6 @@
 # ODAG Wizard
 ![Image of Logo](/img/logo_grey.png)
 
-A solution which helps with the creation of Qlik ODAG Template apps
-
 Version: 1.0
 * Beta release
 
