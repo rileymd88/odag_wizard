@@ -1,6 +1,10 @@
 # ODAG Wizard
 ![Image of Logo](/img/logo_grey.png)
 
+The ODAG Wizard is a solution which enables the creation of an ODAG Template App. The ODAG script is complex and hard for users new to Qlik to understand and the ODAG Wizard aims to take away this complexity by offering a graphical wizard which guides the users through this process.
+
+It will do the work that takes hours in just a couple of minutes.
+
 Version: 1.0
 * Beta release
 
