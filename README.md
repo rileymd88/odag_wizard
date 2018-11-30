@@ -5,6 +5,9 @@ The ODAG Wizard is a solution which enables the creation of an ODAG Template App
 
 It will do the work that takes hours in just a couple of minutes.
 
+[![ODAG Wizard](https://raw.githubusercontent.com/QlikPreSalesDACH/odag_wizard/img/guide/youtube.png)](https://youtu.be/4zxWgFuVFQs)
+
+
 Version: 1.0
 * Beta release
 
