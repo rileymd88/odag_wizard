@@ -12718,7 +12718,7 @@ isindex {
 }
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
-  font-family: 'LUI icons';
+  font-family: 'LUI icons ODAG';
   font-weight: normal;
   font-style: normal;
   text-decoration: inherit;
@@ -14094,7 +14094,7 @@ qmc-user-access-overview {
 }
 [class^="icon-"]:after,
 [class*=" icon-"]:after {
-  font-family: 'LUI icons';
+  font-family: 'LUI icons ODAG';
   font-weight: normal;
   font-style: normal;
   display: inline-block;
@@ -25287,7 +25287,7 @@ isindex {
   color: #595959;
 }
 .qv-preload-icons {
-  font-family: 'LUI icons';
+  font-family: 'LUI icons ODAG';
   position: absolute;
   top: -100px;
   left: -100px;
