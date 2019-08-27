@@ -1,7 +1,11 @@
 # ODAG Wizard
 ![Image of Logo](/img/logo_grey.png)
 
-A solution which helps with the creation of Qlik ODAG Template apps
+The ODAG Wizard is a solution which enables the creation of an ODAG Template App. The ODAG script is complex and hard for users new to Qlik to understand and the ODAG Wizard aims to take away this complexity by offering a graphical wizard which guides the users through this process.
+
+It will do the work that takes hours in just a couple of minutes.
+
+[![ODAG Wizard](https://raw.githubusercontent.com/QlikPreSalesDACH/odag_wizard/master/img/guide/youtube.png)](https://youtu.be/4zxWgFuVFQs)
 
 Version 1.1
 * Updated icons for June 2019 release
@@ -10,7 +14,7 @@ Version: 1.0
 * Beta release
 
 # Setup Instructions
-1. Download the ODAG Wizard from here: https://github.com/rileymd88/odag_wizard.git 
+1. Download the ODAG Wizard from here: https://github.com/QlikPreSalesDACH/odag_wizard/archive/master.zip
 2. Once downloaded. Unzip the folder and place it here on your Qlik Sense Server: ```C:\Program Files\Qlik\Sense\Client``` The folder structure should look like the following: ```C:\Program Files\Qlik\Sense\Client\odag_wizard\...``` (ensure the folder is also named odag_wizard)
 3. You will now need to restart the Qlik Sense Server. Alternativly you can also simply restart all Qlik Sense Services.
 4. You should now be able to navigate to ```https://<YOUR_QLIK_SENSE_SERVER_HOST_NAME>/resources/odag_wizard/odag_wizard.html``` If prompted to login, login with your Qlik Sense credentials
