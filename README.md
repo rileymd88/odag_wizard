@@ -3,6 +3,9 @@
 
 A solution which helps with the creation of Qlik ODAG Template apps
 
+Version 1.1
+* Updated icons for June 2019 release
+
 Version: 1.0
 * Beta release
 
